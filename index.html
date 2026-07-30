@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<!--
+  PORTFOLIO TEMPLATE — Eoghain Gray
+  =================================
+  HOW TO DEPLOY (GitHub Pages):
+  1. Create a repo named exactly "EoghainHG.github.io" on GitHub (this makes it live at
+     https://eoghainhg.github.io automatically), OR use any repo + enable Pages in
+     Settings > Pages > Deploy from branch "main" / root.
+  2. Put this file in the repo root as "index.html".
+  3. Push. Site goes live in ~1 minute at your GitHub Pages URL.
+
+  HOW TO FILL THIS IN:
+  Search this file for "TODO" — every one marks a spot that needs your real content
+  once a project is uploaded to GitHub (repo link, diagrams, deep-dive write-up).
+  Everything else is already filled in from your resume and safe to leave as-is.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eoghain Gray — Digital Design & Verification Engineer</title>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --bg-alt: #12161f;
+    --card: #161b26;
+    --border: #232936;
+    --text: #e6e9ef;
+    --text-dim: #9aa4b2;
+    --accent: #5eead4;
+    --accent-dim: #2dd4bf;
+    --tag-bg: #1d2432;
+    --maxw: 900px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+  header.hero {
+    padding: 72px 0 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  header.hero h1 { font-size: 2.4rem; margin: 0 0 6px; letter-spacing: -0.02em; }
+  header.hero .role { color: var(--accent); font-size: 1.1rem; margin: 0 0 18px; font-weight: 500; }
+  header.hero p.summary { color: var(--text-dim); max-width: 640px; margin: 0 0 20px; }
+  .contact-links { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.95rem; }
+  .contact-links span { color: var(--text-dim); }
+
+  nav.subnav {
+    position: sticky; top: 0;
+    background: rgba(11,14,20,0.9);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--border);
+    z-index: 10;
+  }
+  nav.subnav .wrap { display: flex; gap: 24px; padding: 14px 24px; font-size: 0.9rem; }
+  nav.subnav a { color: var(--text-dim); }
+  nav.subnav a:hover { color: var(--accent); text-decoration: none; }
+
+  section { padding: 56px 0; }
+  section h2 {
+    font-size: 1.5rem;
+    margin: 0 0 28px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  section h2::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+  /* Skills */
+  .skills-grid { display: grid; grid-template-columns: 160px 1fr; gap: 10px 20px; }
+  .skills-grid dt { color: var(--text-dim); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; padding-top: 3px; }
+  .skills-grid dd { margin: 0; }
+  .tag {
+    display: inline-block; background: var(--tag-bg); border: 1px solid var(--border);
+    color: var(--text); padding: 3px 10px; border-radius: 999px; font-size: 0.85rem;
+    margin: 3px 6px 3px 0;
+  }
+
+  /* Projects */
+  .project-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 28px;
+  }
+  .project-card .p-head {
+    display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 6px;
+  }
+  .project-card h3 { margin: 0; font-size: 1.25rem; }
+  .project-card .p-date { color: var(--text-dim); font-size: 0.85rem; white-space: nowrap; }
+  .project-card .p-stack { margin: 6px 0 16px; }
+  .project-card p.p-summary { margin: 0 0 16px; }
+  .project-card ul.highlights { margin: 0 0 16px; padding-left: 20px; }
+  .project-card ul.highlights li { margin-bottom: 6px; }
+
+  .placeholder {
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    color: var(--text-dim);
+    font-size: 0.92rem;
+    margin-bottom: 12px;
+    background: var(--bg-alt);
+  }
+  .placeholder strong { color: var(--text); }
+  .placeholder.todo::before { content: "TODO — "; color: var(--accent-dim); font-weight: 600; }
+
+  .media-placeholder {
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    background: var(--bg-alt);
+    color: var(--text-dim);
+    display: flex; align-items: center; justify-content: center;
+    height: 160px;
+    font-size: 0.85rem;
+    margin-bottom: 16px;
+  }
+
+  .repo-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.9rem; font-weight: 500;
+  }
+
+  details.deepdive { margin-top: 10px; }
+  details.deepdive > summary {
+    cursor: pointer; color: var(--accent); font-size: 0.9rem; font-weight: 500;
+    list-style: none;
+  }
+  details.deepdive > summary::-webkit-details-marker { display: none; }
+  details.deepdive > summary::before { content: "▸ "; }
+  details.deepdive[open] > summary::before { content: "▾ "; }
+  details.deepdive .dd-body { padding-top: 14px; }
+  details.deepdive h4 { margin: 16px 0 6px; font-size: 0.95rem; color: var(--text); }
+  details.deepdive h4:first-child { margin-top: 0; }
+
+  /* Experience */
+  .exp-item { margin-bottom: 22px; }
+  .exp-item .e-head { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+  .exp-item h3 { margin: 0; font-size: 1.05rem; }
+  .exp-item .e-org { color: var(--text-dim); font-size: 0.9rem; }
+  .exp-item .e-date { color: var(--text-dim); font-size: 0.85rem; }
+  .exp-item ul { margin: 8px 0 0; padding-left: 20px; }
+
+  footer { border-top: 1px solid var(--border); padding: 32px 0 60px; color: var(--text-dim); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Eoghain Gray</h1>
+    <p class="role">Digital Design &amp; Verification Engineer — SystemVerilog / RTL / Verification</p>
+    <p class="summary">
+      MS Electrical Engineering (Stony Brook). I design and verify digital hardware in SystemVerilog —
+      from pipelined CPU micro-architecture down through synthesis and place-and-route — and verify it
+      with SVA, functional coverage, and constrained-random testbenches.
+      <!-- TODO: tweak this one-liner once you've picked the specific role flavor (design vs. verification) you're leaning into most. -->
+    </p>
+    <div class="contact-links">
+      <a href="mailto:eoghainhg@gmail.com">eoghainhg@gmail.com</a>
+      <a href="https://linkedin.com/in/eoghaing" target="_blank" rel="noopener">linkedin.com/in/eoghaing</a>
+      <a href="https://github.com/EoghainHG" target="_blank" rel="noopener">github.com/EoghainHG</a>
+      <!-- TODO: add a resume PDF link once it's hosted, e.g. <a href="resume.pdf">Resume (PDF)</a> -->
+    </div>
+  </div>
+</header>
+
+<nav class="subnav">
+  <div class="wrap">
+    <a href="#projects">Projects</a>
+    <a href="#skills">Skills</a>
+    <a href="#experience">Experience</a>
+  </div>
+</nav>
+
+<section id="projects">
+  <div class="wrap">
+    <h2>Projects</h2>
+
+    <!-- PROJECT 1 -->
+    <article class="project-card">
+      <div class="p-head">
+        <h3>Dual-Core RISC-V CPU</h3>
+        <span class="p-date">Jan. 2026 – Present</span>
+      </div>
+      <div class="p-stack">
+        <span class="tag">SystemVerilog</span><span class="tag">Verilator</span><span class="tag">Yosys</span>
+        <span class="tag">OpenROAD</span><span class="tag">Python</span><span class="tag">SKY130 PDK</span>
+      </div>
+      <p class="p-summary">
+        Dual-core, 7-stage pipelined RV32IMA CPU with private I/D caches and a branch prediction unit,
+        carried all the way through a fully routed, DRC/LVS-clean SKY130 implementation
+        (3.24 mm², 40 MHz, 71.7 mW).
+      </p>
+      <ul class="highlights">
+        <li>Architected the dual-core pipeline and cache hierarchy in SystemVerilog</li>
+        <li>Verified functional correctness against official RISC-V and multicore compliance suites using SVA and functional coverage</li>
+        <li>Built a closed-loop Python optimizer that re-tunes Yosys synthesis and OpenROAD PNR configuration from timing/DRC feedback</li>
+      </ul>
+
+      <div class="media-placeholder">[ TODO: add block diagram of the pipeline / cache hierarchy ]</div>
+      <div class="media-placeholder">[ TODO: add OpenROAD layout screenshot or PPA summary chart ]</div>
+
+      <a class="repo-link" href="#" target="_blank" rel="noopener">→ TODO: link GitHub repo once pushed</a>
+
+      <details class="deepdive">
+        <summary>Deep dive</summary>
+        <div class="dd-body">
+          <h4>Architecture &amp; design decisions</h4>
+          <div class="placeholder todo">
+            Explain the pipeline stages, cache coherence approach between the two cores, and branch
+            predictor design. Note any trade-offs you made and why (e.g., area vs. frequency, cache size vs. hit rate).
+          </div>
+          <h4>Verification approach</h4>
+          <div class="placeholder todo">
+            Describe your SVA properties and what they check, your functional coverage model (what
+            corner cases / cross-core hazards you targeted), and how you tracked coverage closure.
+          </div>
+          <h4>Results &amp; what you'd do differently</h4>
+          <div class="placeholder todo">
+            Final PPA numbers, what the critical path was, and what you'd optimize next (e.g., deeper
+            pipelining, larger caches, adding a UVM environment).
+          </div>
+        </div>
+      </details>
+    </article>
+
+    <!-- PROJECT 2 -->
+    <article class="project-card">
+      <div class="p-head">
+        <h3>CELL SPU Lite Processor</h3>
+        <span class="p-date">Jan. 2025 – May 2025</span>
+      </div>
+      <div class="p-stack">
+        <span class="tag">SystemVerilog</span><span class="tag">Xcelium</span><span class="tag">Verisium</span>
+      </div>
+      <p class="p-summary">
+        Pipelined CELL SPU-Lite processor with instruction fetch, register file, branch prediction,
+        forwarding/hazard resolution, and dual execution units.
+      </p>
+      <ul class="highlights">
+        <li>Designed the full pipeline in SystemVerilog, including forwarding and hazard-resolution logic</li>
+        <li>Verified the design with SVA-based checking and functional coverage, using Cadence Xcelium and Verisium for simulation and debug</li>
+      </ul>
+
+      <div class="media-placeholder">[ TODO: add pipeline diagram ]</div>
+      <div class="media-placeholder">[ TODO: add waveform screenshot from Xcelium/Verisium ]</div>
+
+      <a class="repo-link" href="#" target="_blank" rel="noopener">→ TODO: link GitHub repo once pushed</a>
+
+      <details class="deepdive">
+        <summary>Deep dive</summary>
+        <div class="dd-body">
+          <h4>Architecture &amp; design decisions</h4>
+          <div class="placeholder todo">
+            What made this a "lite" version of the CELL SPU? What did you simplify and why?
+          </div>
+          <h4>Verification approach</h4>
+          <div class="placeholder todo">
+            What SVA properties did you write (e.g., forwarding correctness, hazard stalls)? What did
+            your functional coverage model track? Any bugs you found this way worth mentioning?
+          </div>
+          <h4>Results &amp; what you'd do differently</h4>
+          <div class="placeholder todo">
+            Final state of the design, what's untested, what you'd add with more time (e.g., a UVM testbench).
+          </div>
+        </div>
+      </details>
+    </article>
+
+    <!-- PROJECT 3 -->
+    <article class="project-card">
+      <div class="p-head">
+        <h3>Matrix Multiplier Hardware</h3>
+        <span class="p-date">Aug. 2024 – Dec. 2024</span>
+      </div>
+      <div class="p-stack">
+        <span class="tag">SystemVerilog</span><span class="tag">QuestaSim</span><span class="tag">Synopsys Design Compiler</span>
+      </div>
+      <p class="p-summary">
+        Matrix-multiplication hardware (accumulate unit, output FIFO, memory, multiplier array),
+        verified with constrained-random testbenches and synthesized for maximum clock frequency.
+      </p>
+      <ul class="highlights">
+        <li>Designed and verified the datapath in SystemVerilog using constrained-random, self-checking testbenches with functional coverage in QuestaSim</li>
+        <li>Synthesized with Synopsys Design Compiler, optimizing each pipeline stage for frequency and PPA</li>
+      </ul>
+
+      <div class="media-placeholder">[ TODO: add datapath / block diagram ]</div>
+      <div class="media-placeholder">[ TODO: add QuestaSim coverage report or synthesis timing summary ]</div>
+
+      <a class="repo-link" href="#" target="_blank" rel="noopener">→ TODO: link GitHub repo once pushed</a>
+
+      <details class="deepdive">
+        <summary>Deep dive</summary>
+        <div class="dd-body">
+          <h4>Architecture &amp; design decisions</h4>
+          <div class="placeholder todo">
+            Matrix size(s) supported, memory/FIFO sizing choices, pipelining strategy.
+          </div>
+          <h4>Verification approach</h4>
+          <div class="placeholder todo">
+            What was randomized (matrix dimensions? data values?), what the scoreboard/self-check
+            compared against, and what functional coverage bins you tracked.
+          </div>
+          <h4>Results &amp; what you'd do differently</h4>
+          <div class="placeholder todo">
+            Achieved clock frequency, area/timing trade-offs from Design Compiler, and next steps.
+          </div>
+        </div>
+      </details>
+    </article>
+
+  </div>
+</section>
+
+<section id="skills">
+  <div class="wrap">
+    <h2>Skills</h2>
+    <dl class="skills-grid">
+      <dt>Languages</dt>
+      <dd><span class="tag">SystemVerilog</span><span class="tag">VHDL</span><span class="tag">C/C++</span><span class="tag">Python</span><span class="tag">AVR</span><span class="tag">MIPS Assembly</span><span class="tag">Tcl</span></dd>
+
+      <dt>Verification</dt>
+      <dd><span class="tag">SVA</span><span class="tag">Functional Coverage</span><span class="tag">Constrained-Random Verification</span><span class="tag">Self-Checking Testbenches</span><span class="tag">UVM (in progress)</span></dd>
+
+      <dt>Physical Design / EDA</dt>
+      <dd><span class="tag">OpenROAD</span><span class="tag">Yosys</span><span class="tag">Verilator</span><span class="tag">LibreLane</span><span class="tag">QuestaSim</span><span class="tag">Xcelium</span><span class="tag">Verisium</span><span class="tag">Synopsys Design Compiler</span><span class="tag">Vivado</span></dd>
+
+      <dt>Software Tools</dt>
+      <dd><span class="tag">Git</span><span class="tag">CLion</span><span class="tag">PyCharm</span><span class="tag">VS Code</span><span class="tag">AWS</span><span class="tag">MATLAB/Simulink</span></dd>
+    </dl>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="wrap">
+    <h2>Experience</h2>
+
+    <div class="exp-item">
+      <div class="e-head">
+        <h3>Interdisciplinary Science Department Student Assistant</h3>
+        <span class="e-date">Jul. 2024 – Aug. 2025</span>
+      </div>
+      <div class="e-org">Brookhaven National Laboratory, Upton, NY</div>
+      <ul>
+        <li>Designed a cost-effective embedded air-quality sensor platform in C++, saving an estimated $15,000 per unit versus lab-grade instrumentation while maintaining strong correlation to reference data</li>
+        <li>Built data-acquisition tooling consolidating multiple lab instruments into InfluxDB and Grafana for real-time hardware monitoring</li>
+      </ul>
+    </div>
+
+    <div class="exp-item">
+      <div class="e-head">
+        <h3>Test Engineering Intern</h3>
+        <span class="e-date">Aug. 2023 – May 2024</span>
+      </div>
+      <div class="e-org">North Atlantic Industries, Bohemia, NY</div>
+      <ul>
+        <li>Developed automated test and functional verification scripts for embedded DUTs on Intel and Xilinx FPGA-based processors; authored bring-up and programming procedures for new Linux-based platforms</li>
+        <li>Partnered with the Verification team to build automated test benches in C#, confirming pass/fail results via hands-on hardware debug (oscilloscope, logic analyzer)</li>
+      </ul>
+    </div>
+
+    <div class="exp-item">
+      <div class="e-head">
+        <h3>Digital Design Lab Teaching Assistant</h3>
+        <span class="e-date">Jan. 2023 – May 2023</span>
+      </div>
+      <div class="e-org">Stony Brook University, Stony Brook, NY</div>
+      <ul>
+        <li>Taught RTL design fundamentals in VHDL — writing, simulating, and synthesizing designs — using concepts directly transferable to SystemVerilog design flows</li>
+        <li>Authored lab assignments and self-checking testbenches in VHDL to verify student RTL designs</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Eoghain Gray · <a href="mailto:eoghainhg@gmail.com">eoghainhg@gmail.com</a> · <a href="https://github.com/EoghainHG">GitHub</a> · <a href="https://linkedin.com/in/eoghaing">LinkedIn</a>
+  </div>
+</footer>
+
+</body>
+</html>
