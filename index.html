@@ -173,6 +173,70 @@
   <div class="wrap">
     <h2>Projects</h2>
 
+    <!-- PROJECT 0 -->
+    <article class="project-card">
+      <div class="p-head">
+        <h3>Genesys 2 RISC-V SoC — Linux on Custom Silicon</h3>
+        <span class="p-date">Aug. 2026 – Present</span>
+      </div>
+      <div class="p-stack">
+        <span class="tag">SystemVerilog</span><span class="tag">Verilator</span><span class="tag">Vivado</span>
+        <span class="tag">RISC-V (RV32IMA)</span><span class="tag">Linux</span><span class="tag">OpenSBI</span>
+        <span class="tag">AXI4 / AXI4-Lite</span>
+      </div>
+      <p class="p-summary">
+        A custom RV32IMA RISC-V system-on-chip written from scratch in SystemVerilog, targeting a
+        Digilent Genesys 2 FPGA board (Xilinx Kintex-7). The core boots OpenSBI and an unmodified
+        Linux kernel to an interactive shell over a self-built UART PHY, backed by 1GB of real
+        DDR3 through Xilinx's MIG controller — verified in simulation and brought up incrementally
+        on physical hardware.
+      </p>
+      <ul class="highlights">
+        <li>Designed a custom 5-stage pipelined RV32IMA core from scratch — Sv32 virtual memory with a hardware page-table walker and ITLB/DTLB, a branch target buffer, hardware multiply/divide and atomics, and EX-EX/MEM-EX forwarding — enough to run an unmodified Linux kernel</li>
+        <li>Built a from-scratch UART PHY (this board has no hard UART IP) with a 16550-compatible register model, so Linux's stock 8250 driver talks to it natively</li>
+        <li>Brought up DDR3 via Xilinx MIG and AXI SmartConnect in staged, risk-isolated bitstreams (blink → core-only → UART → DDR3 → SD), root-causing real silicon bugs — a missing generated-clock constraint that made a timing report meaningless, and a ~6.3% UART baud-rate mismatch causing intermittent byte corruption — using ILA-captured waveforms on the real board</li>
+        <li>Booted OpenSBI and a full, unmodified Linux kernel to a real interactive shell prompt on physical Kintex-7 hardware</li>
+      </ul>
+
+      <div class="media-placeholder">[ TODO: add SoC block diagram (core / caches / peripherals / AXI bridge) ]</div>
+      <div class="media-placeholder">[ TODO: add terminal screenshot of the Linux boot log / shell prompt over UART ]</div>
+
+      <a class="repo-link" href="https://github.com/EoghainHG/genesys2" target="_blank" rel="noopener">→ github.com/EoghainHG/genesys2</a>
+
+      <details class="deepdive">
+        <summary>Deep dive</summary>
+        <div class="dd-body">
+          <h4>Architecture &amp; design decisions</h4>
+          <div class="placeholder">
+            A 5-stage IF/ID/EX/MEM/WB pipeline with separate instruction and data caches bridged to
+            DDR3 over AXI4-Lite; MMIO ranges are decoded around the cache so peripheral accesses are
+            never cached. Sv32 virtual memory lets the core run a stock Linux kernel unmodified.
+            Peripherals (CLINT, PLIC, a 16550-compatible UART, an SPI master for SD, and a bit-banged
+            I2C/GPIO block for the board's power monitors) sit behind an MMIO decoder. Programs load
+            into DDR3 over JTAG before the CPU is released from reset, since the Genesys 2 has no hard
+            processor system — the only path onto the board.
+          </div>
+          <h4>Verification approach</h4>
+          <div class="placeholder">
+            A Verilator regression suite covers the core, caches, MMU, interrupts, and every
+            peripheral individually, plus the official riscv-tests ISA compliance suite and an
+            OpenSBI boot test in simulation. Real hardware bring-up followed the same staged-risk
+            discipline — each new subsystem (UART, DDR3 via MIG, SD) got its own isolated top-level
+            bitstream before being folded into the full design, and a Basic-tier ILA was instantiated
+            directly in RTL to capture real AXI/cache traffic on the board when a bug (intermittent
+            instruction-fetch corruption) couldn't be root-caused from symptoms alone.
+          </div>
+          <h4>Results &amp; what's next</h4>
+          <div class="placeholder">
+            MIG DDR3 calibration, the full AXI datapath, every instruction fetch in a real test
+            program, and UART output are all independently confirmed correct on physical hardware,
+            and Linux now boots to an interactive shell. Next: SD card storage over the board's native
+            4-bit SDIO pins, and video output.
+          </div>
+        </div>
+      </details>
+    </article>
+
     <!-- PROJECT 1 -->
     <article class="project-card">
       <div class="p-head">
