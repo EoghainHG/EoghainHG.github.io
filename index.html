@@ -238,9 +238,6 @@
         <li>Booted OpenSBI and a full, unmodified Linux kernel to a real interactive shell prompt on physical Kintex-7 hardware</li>
       </ul>
 
-      <div class="media-placeholder">[ TODO: add SoC block diagram (core / caches / peripherals / AXI bridge) ]</div>
-      <div class="media-placeholder">[ TODO: add terminal screenshot of the Linux boot log / shell prompt over UART ]</div>
-
       <a class="repo-link" href="https://github.com/EoghainHG/genesys2" target="_blank" rel="noopener">→ github.com/EoghainHG/genesys2</a>
 
       <details class="deepdive">
@@ -301,8 +298,6 @@
         <li>Caught a bug invisible to 109 passing simulation tests — the reference design's output pin never actually held its level on real hardware — by capturing and decoding each protocol on a Genesys 2 FPGA with a logic analyzer, and made that hardware-confirmation step mandatory for every candidate going forward</li>
         <li>Measured that 10BASE-T Ethernet (Manchester-encoded, ~3.3 clocks per half-bit at Tiny Tapeout's 66 MHz pad ceiling) can't fit a programmable sequencer at any legal clock, and built it instead as dedicated hardware — a from-scratch serializer/deserializer/FCS datapath (596 cells) — validating the no-PHY, direct-pin-drive approach on real hardware via a hand-routed companion board before committing the pin budget on-chip</li>
       </ul>
-
-      <div class="media-placeholder">[ TODO: add winning candidate's architecture diagram / Tiny Tapeout die shot once a design is frozen ]</div>
 
       <a class="repo-link" href="https://github.com/EoghainHG/janestreet-protocol-emulator" target="_blank" rel="noopener">→ github.com/EoghainHG/janestreet-protocol-emulator</a>
 
@@ -455,29 +450,6 @@
         <li>Verified the design with SVA-based checking and functional coverage, using Cadence Xcelium and Verisium for simulation and debug</li>
       </ul>
 
-      <div class="media-placeholder">[ TODO: add pipeline diagram ]</div>
-      <div class="media-placeholder">[ TODO: add waveform screenshot from Xcelium/Verisium ]</div>
-
-      <a class="repo-link" href="#" target="_blank" rel="noopener">→ TODO: link GitHub repo once pushed</a>
-
-      <details class="deepdive">
-        <summary>Deep dive</summary>
-        <div class="dd-body">
-          <h4>Architecture &amp; design decisions</h4>
-          <div class="placeholder todo">
-            What made this a "lite" version of the CELL SPU? What did you simplify and why?
-          </div>
-          <h4>Verification approach</h4>
-          <div class="placeholder todo">
-            What SVA properties did you write (e.g., forwarding correctness, hazard stalls)? What did
-            your functional coverage model track? Any bugs you found this way worth mentioning?
-          </div>
-          <h4>Results &amp; what you'd do differently</h4>
-          <div class="placeholder todo">
-            Final state of the design, what's untested, what you'd add with more time (e.g., a UVM testbench).
-          </div>
-        </div>
-      </details>
     </article>
 
     <!-- PROJECT 2.5 -->
@@ -595,7 +567,6 @@
     CTRL -- compute_finished --&gt; FSM1
     FIFO --&gt; OUT</pre>
       </div>
-      <div class="media-placeholder">[ TODO: add GDS/Magic layout screenshot from the saved local run ]</div>
 
       <a class="repo-link" href="https://github.com/EoghainHG/matmul-accelerator" target="_blank" rel="noopener">→ github.com/EoghainHG/matmul-accelerator</a>
 
