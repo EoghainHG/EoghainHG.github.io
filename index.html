@@ -114,6 +114,29 @@
     margin-bottom: 16px;
   }
 
+  .p-media {
+    display: block;
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-alt);
+    margin-bottom: 16px;
+  }
+  .p-media-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .p-media-row .p-media { margin-bottom: 0; }
+  .p-media-row figure { margin: 0 0 16px; }
+  .p-media-row figcaption { color: var(--text-dim); font-size: 0.8rem; margin-top: 6px; text-align: center; }
+
+  .mermaid-diagram {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-alt);
+    padding: 18px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+  }
+  .mermaid-diagram pre.mermaid { margin: 0; display: flex; justify-content: center; }
+
   .repo-link {
     display: inline-flex; align-items: center; gap: 6px;
     font-size: 0.9rem; font-weight: 500;
@@ -141,6 +164,23 @@
 
   footer { border-top: 1px solid var(--border); padding: 32px 0 60px; color: var(--text-dim); font-size: 0.9rem; }
 </style>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: "dark",
+    themeVariables: {
+      darkMode: true,
+      background: "#12161f",
+      primaryColor: "#1d2432",
+      primaryTextColor: "#e6e9ef",
+      primaryBorderColor: "#2dd4bf",
+      lineColor: "#5eead4",
+      secondaryColor: "#161b26",
+      tertiaryColor: "#161b26"
+    }
+  });
+</script>
 </head>
 <body>
 
@@ -237,49 +277,161 @@
       </details>
     </article>
 
-    <!-- PROJECT 1 -->
+    <!-- PROJECT 0.5 -->
     <article class="project-card">
       <div class="p-head">
-        <h3>Dual-Core RISC-V CPU</h3>
-        <span class="p-date">Jan. 2026 – Present</span>
+        <h3>Protocol Emulator — Jane Street Tiny Tapeout ASIC Entry</h3>
+        <span class="p-date">Sep. 2026 – Present</span>
       </div>
       <div class="p-stack">
-        <span class="tag">SystemVerilog</span><span class="tag">Verilator</span><span class="tag">Yosys</span>
-        <span class="tag">OpenROAD</span><span class="tag">Python</span><span class="tag">SKY130 PDK</span>
+        <span class="tag">Verilog / SystemVerilog</span><span class="tag">cocotb</span>
+        <span class="tag">LibreLane</span><span class="tag">Tiny Tapeout</span><span class="tag">IHP CMOS5L</span>
       </div>
       <p class="p-summary">
-        Dual-core, 7-stage pipelined RV32IMA CPU with private I/D caches and a branch prediction unit,
-        carried all the way through a fully routed, DRC/LVS-clean SKY130 implementation
-        (3.24 mm², 40 MHz, 71.7 mW).
+        A reprogrammable, multi-protocol pin emulator built for a Jane Street-sponsored Tiny Tapeout
+        ASIC competition. Four competing micro-architectures — a microcoded pin-sequencer, a tiny
+        accumulator CPU, an FSM-plus-shift-register hybrid, and a distributed per-signal
+        pattern-generator design — are benchmarked against a shared bar: implement SPI, UART, and I2C
+        from loaded programs with the RTL frozen between them, confirmed not just in simulation but
+        captured and decoded on real FPGA hardware.
       </p>
       <ul class="highlights">
-        <li>Architected the dual-core pipeline and cache hierarchy in SystemVerilog</li>
-        <li>Verified functional correctness against official RISC-V and multicore compliance suites using SVA and functional coverage</li>
-        <li>Built a closed-loop Python optimizer that re-tunes Yosys synthesis and OpenROAD PNR configuration from timing/DRC feedback</li>
+        <li>Designed and benchmarked four candidate pin-sequencer architectures against a shared SPI-mode-0 baseline — 188 to 395 cells (0.8–1.6% of the ~24K-cell Tiny Tapeout budget) — versus a 6,202-cell (26%) reference design, reframing die area from a non-issue to a real constraint</li>
+        <li>Defined a pass bar that forces an honest comparison: all three required protocols (SPI, UART, I2C) must run from loaded programs with the RTL frozen between them — I2C's open-drain pins, clock stretching, and ACK turnaround are the discriminator none of the lean candidates handle yet</li>
+        <li>Caught a bug invisible to 109 passing simulation tests — the reference design's output pin never actually held its level on real hardware — by capturing and decoding each protocol on a Genesys 2 FPGA with a logic analyzer, and made that hardware-confirmation step mandatory for every candidate going forward</li>
+        <li>Measured that 10BASE-T Ethernet (Manchester-encoded, ~3.3 clocks per half-bit at Tiny Tapeout's 66 MHz pad ceiling) can't fit a programmable sequencer at any legal clock, and built it instead as dedicated hardware — a from-scratch serializer/deserializer/FCS datapath (596 cells) — validating the no-PHY, direct-pin-drive approach on real hardware via a hand-routed companion board before committing the pin budget on-chip</li>
       </ul>
 
-      <div class="media-placeholder">[ TODO: add block diagram of the pipeline / cache hierarchy ]</div>
-      <div class="media-placeholder">[ TODO: add OpenROAD layout screenshot or PPA summary chart ]</div>
+      <div class="media-placeholder">[ TODO: add winning candidate's architecture diagram / Tiny Tapeout die shot once a design is frozen ]</div>
 
-      <a class="repo-link" href="#" target="_blank" rel="noopener">→ TODO: link GitHub repo once pushed</a>
+      <a class="repo-link" href="https://github.com/EoghainHG/janestreet-protocol-emulator" target="_blank" rel="noopener">→ github.com/EoghainHG/janestreet-protocol-emulator</a>
 
       <details class="deepdive">
         <summary>Deep dive</summary>
         <div class="dd-body">
           <h4>Architecture &amp; design decisions</h4>
-          <div class="placeholder todo">
-            Explain the pipeline stages, cache coherence approach between the two cores, and branch
-            predictor design. Note any trade-offs you made and why (e.g., area vs. frequency, cache size vs. hit rate).
+          <div class="placeholder">
+            Four paradigms for the same job — sequencing pin actions from a loaded program — are built
+            and compared head to head: a combinational microcode ROM driving pin actions and
+            loop/branch fields directly; a tiny general-purpose accumulator core with a pin-oriented
+            instruction set (protocol behavior lives entirely in firmware); dedicated shift-register and
+            clock-divider primitives sequenced by a small explicit FSM; and independent per-signal
+            countdown registers (SCLK, MOSI, MISO, CS_N, DONE) driven by one shared step pulse, with no
+            central FSM state at all.
           </div>
           <h4>Verification approach</h4>
-          <div class="placeholder todo">
-            Describe your SVA properties and what they check, your functional coverage model (what
-            corner cases / cross-core hazards you targeted), and how you tracked coverage closure.
+          <div class="placeholder">
+            Per candidate: cells/µm² at full function, core clocks per bit per protocol, max bit rate at
+            50 MHz, program words per protocol, pins required, and — the discriminator the project
+            treats as non-negotiable — whether it's been hardware-confirmed. Simulation agreement alone
+            doesn't count: a prior design passed 109 simulation unit tests while its pin never held a
+            real level on hardware, because every test happened to sample it in the one cycle it looked
+            correct. Every candidate now has to be captured on a Genesys 2 FPGA and decoded against
+            expected timing before it's recorded as passing.
           </div>
-          <h4>Results &amp; what you'd do differently</h4>
-          <div class="placeholder todo">
-            Final PPA numbers, what the critical path was, and what you'd optimize next (e.g., deeper
-            pipelining, larger caches, adding a UVM environment).
+          <h4>Results &amp; what's next</h4>
+          <div class="placeholder">
+            All four lean candidates clear SPI mode-0 at 188–395 cells; the riscy accumulator core also
+            adds UART TX, at a cost (two new opcodes, a wider instruction word) that a prior analytical
+            estimate missed entirely. I2C — open-drain, clock-stretching, ACK turnaround — is the next
+            gate, since none of today's candidates handle it yet. Ethernet is explicitly out of scope
+            for the programmable core (the clock-rate math rules it out) and lives instead as the
+            separate fixed-function datapath described above.
+          </div>
+        </div>
+      </details>
+    </article>
+
+    <!-- PROJECT 1 -->
+    <article class="project-card">
+      <div class="p-head">
+        <h3>RISC-V 7-Stage Dual-Core CPU — Sky130 RTL-to-GDSII</h3>
+        <span class="p-date">Jan. 2026 – Present</span>
+      </div>
+      <div class="p-stack">
+        <span class="tag">SystemVerilog</span><span class="tag">Verilator</span><span class="tag">LibreLane</span>
+        <span class="tag">OpenROAD</span><span class="tag">Magic / KLayout</span><span class="tag">SKY130 PDK</span>
+      </div>
+      <p class="p-summary">
+        Dual-core, 7-stage pipelined RV32IM(+A) processor with coherent private caches and a branch
+        target buffer, taken through a full LibreLane (OpenROAD) place-and-route flow on the SkyWater
+        sky130 open PDK — closing timing at 40 MHz across all 9 PVT corners with 0 routing DRC errors
+        and a clean LVS (3.24 mm², 84.6 mW).
+      </p>
+      <ul class="highlights">
+        <li>Architected a 7-stage pipeline (IF → PD → ID → RF → EX → MA → WB) per core, with a 64-entry branch target buffer, 2-bit saturating counters, and 0-cycle-penalty JAL resolution in IF</li>
+        <li>Designed write-invalidate snooping coherence between the two cores' write-through D-caches, plus cross-hart LR/SC arbitration (<code>sc_inhibit</code>) and reservation invalidation for atomics</li>
+        <li>Verified against the official RISC-V ISA test suite in Verilator — 57/57 single-core, 57/57 dual-core, plus 4/4 custom multicore coherence/atomics tests (cache coherence, shared LR/SC counter, spinlock, <code>mhartid</code>)</li>
+        <li>Closed timing at 25 ns / 40 MHz across all 9 PVT corners post-route with 0 setup/hold violations, 0 routing DRC errors, and a clean Netgen LVS — backed by two <code>sky130_sram_1kbyte</code> macros per core</li>
+      </ul>
+
+      <div class="mermaid-diagram">
+        <pre class="mermaid">flowchart TB
+    subgraph TOP["dual_core_top"]
+        direction TB
+        subgraph C0["Core 0  (hart 0)"]
+            direction TB
+            CPU0["cpu&lt;br/&gt;7-stage RV32IMA"]
+            IC0["icache&lt;br/&gt;32 sets × 4 words&lt;br/&gt;512 B, flops"]
+            DC0["dcache&lt;br/&gt;64 sets × 4 words, 1 KB"]
+            SR0[("SRAM macro&lt;br/&gt;sky130_sram_1kbyte&lt;br/&gt;32 × 256")]
+            CPU0 -- "imem addr / data / stall" --&gt; IC0
+            CPU0 -- "dmem addr / wdata / wmask / rdata / stall" --&gt; DC0
+            DC0 --- SR0
+        end
+        subgraph C1["Core 1  (hart 1)"]
+            direction TB
+            CPU1["cpu&lt;br/&gt;7-stage RV32IMA"]
+            IC1["icache&lt;br/&gt;32 sets × 4 words&lt;br/&gt;512 B, flops"]
+            DC1["dcache&lt;br/&gt;64 sets × 4 words, 1 KB"]
+            SR1[("SRAM macro&lt;br/&gt;sky130_sram_1kbyte&lt;br/&gt;32 × 256")]
+            CPU1 -- "imem addr / data / stall" --&gt; IC1
+            CPU1 -- "dmem addr / wdata / wmask / rdata / stall" --&gt; DC1
+            DC1 --- SR1
+        end
+        DC0 &lt;-. "store snoop&lt;br/&gt;(write-invalidate)" .-&gt; DC1
+        CPU0 &lt;-. "LR reservation invalidate&lt;br/&gt;SC arbitration (sc_inhibit)" .-&gt; CPU1
+    end
+    IC0 --&gt; IM0["ic0_mem_*"]
+    DC0 --&gt; DM0["dc0_mem_*"]
+    IC1 --&gt; IM1["ic1_mem_*"]
+    DC1 --&gt; DM1["dc1_mem_*"]</pre>
+      </div>
+      <figure>
+        <img class="p-media" src="images/dualcore-layout.png" alt="Final routed layout of the dual-core RISC-V SoC in sky130, metal layers li1 through met5">
+        <figcaption>Final routed layout (li1–met5), 1.8 mm × 1.8 mm die — the two magenta blocks per core are the sky130 SRAM macros backing each D-cache</figcaption>
+      </figure>
+
+      <a class="repo-link" href="https://github.com/EoghainHG/risc-7stage-rtl" target="_blank" rel="noopener">→ github.com/EoghainHG/risc-7stage-rtl</a>
+
+      <details class="deepdive">
+        <summary>Deep dive</summary>
+        <div class="dd-body">
+          <h4>Architecture &amp; design decisions</h4>
+          <div class="placeholder">
+            Each core has its own CPU, I-cache, and D-cache with independent external memory ports.
+            Both D-caches are write-through, so write-invalidate snooping is sufficient for coherence —
+            every store from one core invalidates any matching line in the other core's D-cache.
+            Hazards are handled with EX/MA→EX, MA/WB→EX, and MA/WB→RF forwarding, a 1-cycle load-use
+            stall, and a 4-cycle mispredict penalty on resolved branches/JALR/traps (correctly predicted
+            branches and all JALs cost nothing, since JAL is decoded in IF).
+          </div>
+          <h4>Verification approach</h4>
+          <div class="placeholder">
+            Verilator C++ testbenches run the official RV32UI/UM/UA ISA tests (generated as hex images,
+            so no RISC-V toolchain is required) against both the single-core and dual-core tops, plus
+            four hand-written multicore tests targeting cache coherence, a shared LR/SC counter, an
+            LR/SC spinlock, and per-hart <code>mhartid</code>. The SRAM macro is swapped for a
+            behavioral model in simulation, which synthesis also uses as a black box.
+          </div>
+          <h4>Results &amp; what's next</h4>
+          <div class="placeholder">
+            Timing closes at every PVT corner (worst case +0.224 ns setup at max_ss_100C_1v60), with
+            66.3% instance utilization and 0 router DRC errors — but Magic/KLayout sign-off DRC and
+            antenna repair are currently disabled to keep run time manageable, so this isn't tape-out
+            clean yet: 707 nets still carry antenna violations and there are slew/cap violations at the
+            slow and fast corners. Next: insert diodes during placement, give the floorplan more room,
+            and re-run full sign-off DRC.
           </div>
         </div>
       </details>
@@ -328,44 +480,150 @@
       </details>
     </article>
 
-    <!-- PROJECT 3 -->
+    <!-- PROJECT 2.5 -->
     <article class="project-card">
       <div class="p-head">
-        <h3>Matrix Multiplier Hardware</h3>
-        <span class="p-date">Aug. 2024 – Dec. 2024</span>
+        <h3>VLSI Standard-Cell Placement Engine</h3>
+        <span class="p-date">Jan. 2025 – May 2025</span>
       </div>
       <div class="p-stack">
-        <span class="tag">SystemVerilog</span><span class="tag">QuestaSim</span><span class="tag">Synopsys Design Compiler</span>
+        <span class="tag">C++</span><span class="tag">Eigen</span><span class="tag">Python</span>
+        <span class="tag">EDA / Physical Design</span>
       </div>
       <p class="p-summary">
-        Matrix-multiplication hardware (accumulate unit, output FIFO, memory, multiplier array),
-        verified with constrained-random testbenches and synthesized for maximum clock frequency.
+        A standard-cell placement flow for VLSI physical design, reading industry-standard
+        Bookshelf-format benchmark circuits (the ISPD <code>superblue12</code> benchmark) and
+        implementing two independent placement strategies — min-cut recursive bipartitioning and
+        quadratic (analytic) placement — sharing a common Fiduccia–Mattheyses partitioner.
       </p>
       <ul class="highlights">
-        <li>Designed and verified the datapath in SystemVerilog using constrained-random, self-checking testbenches with functional coverage in QuestaSim</li>
-        <li>Synthesized with Synopsys Design Compiler, optimizing each pipeline stage for frequency and PPA</li>
+        <li>Implemented the Fiduccia–Mattheyses (FM) min-cut partitioning algorithm from scratch in C++, with a bucket-list gain structure and checkpointing so FM results can be saved/reloaded instead of recomputed</li>
+        <li>Built a recursive bipartitioning placer that alternates horizontal/vertical cuts across the chip region, driven by FM partitioning at every level of recursion, with a legalization pass that removes overlaps while respecting fixed terminals</li>
+        <li>Built an independent quadratic placer that formulates placement as a sparse linear system (clique and star net models) solved via Eigen for minimum squared wirelength, followed by cell spreading and legalization</li>
+        <li>Built a Python visualization pipeline (scatter plot + density heatmap) to compare cell distribution and area utilization between the two strategies</li>
       </ul>
 
-      <div class="media-placeholder">[ TODO: add datapath / block diagram ]</div>
-      <div class="media-placeholder">[ TODO: add QuestaSim coverage report or synthesis timing summary ]</div>
+      <div class="p-media-row">
+        <figure><img class="p-media" src="images/placement-mincut.png" alt="Cell placement scatter plot and area utilization heatmap from the min-cut recursive bipartitioning placer"><figcaption>Min-cut recursive bipartitioning</figcaption></figure>
+        <figure><img class="p-media" src="images/placement-quadratic.png" alt="Cell placement scatter plot and area utilization heatmap from the quadratic placer"><figcaption>Quadratic (analytic) placement</figcaption></figure>
+      </div>
 
-      <a class="repo-link" href="#" target="_blank" rel="noopener">→ TODO: link GitHub repo once pushed</a>
+      <a class="repo-link" href="https://github.com/EoghainHG/ESE556-project-2" target="_blank" rel="noopener">→ github.com/EoghainHG/ESE556-project-2</a>
 
       <details class="deepdive">
         <summary>Deep dive</summary>
         <div class="dd-body">
           <h4>Architecture &amp; design decisions</h4>
-          <div class="placeholder todo">
-            Matrix size(s) supported, memory/FIFO sizing choices, pipelining strategy.
+          <div class="placeholder">
+            FM min-cut partitioning is the shared primitive behind both strategies. The recursive
+            bipartitioning placer repeatedly splits the chip's rectangular region in half, using FM
+            to decide which cells belong in each half at every level, until each region holds a small
+            group of cells. The quadratic placer instead builds a sparse connectivity matrix from the
+            netlist and solves directly for cell positions minimizing squared wirelength, then spreads
+            cells out to relieve density before legalizing.
           </div>
           <h4>Verification approach</h4>
-          <div class="placeholder todo">
-            What was randomized (matrix dimensions? data values?), what the scoreboard/self-check
-            compared against, and what functional coverage bins you tracked.
+          <div class="placeholder">
+            Both flows were run against the ISPD <code>superblue12</code> Bookshelf benchmark, parsing
+            <code>.nodes</code>/<code>.nets</code> files and distinguishing movable cells from fixed
+            terminals. Correctness was checked by rendering final placements as a scatter plot (fixed
+            vs. non-fixed cells) and a density heatmap, confirming legalization eliminated overlaps and
+            fixed terminals stayed in place.
           </div>
-          <h4>Results &amp; what you'd do differently</h4>
-          <div class="placeholder todo">
-            Achieved clock frequency, area/timing trade-offs from Design Compiler, and next steps.
+          <h4>Results &amp; what's next</h4>
+          <div class="placeholder">
+            Both strategies converge to legalized, overlap-free layouts on <code>superblue12</code>,
+            with the quadratic placer's density map noticeably tighter near the die edges than the
+            min-cut placer's. Next step would be a wirelength-driven detailed placement pass on top of
+            either global placer's output.
+          </div>
+        </div>
+      </details>
+    </article>
+
+    <!-- PROJECT 3 -->
+    <article class="project-card">
+      <div class="p-head">
+        <h3>Matrix Multiply Accelerator — Sky130 RTL-to-GDS</h3>
+        <span class="p-date">Aug. 2024 – Dec. 2024</span>
+      </div>
+      <div class="p-stack">
+        <span class="tag">SystemVerilog</span><span class="tag">LibreLane</span><span class="tag">OpenROAD</span>
+        <span class="tag">Magic / KLayout</span><span class="tag">Python</span><span class="tag">SKY130 PDK</span>
+      </div>
+      <p class="p-summary">
+        A parameterized, AXI-Stream matrix-matrix multiplier (M×K by K×N, 12-bit signed in / 32-bit
+        saturating out) hardened to GDS with LibreLane on the SkyWater sky130 PDK, closing timing at
+        21.79 ns (~46 MHz) with 0 DRC/LVS errors and 16.9 mW — paired with a Python tool that reads a
+        run's metrics, ranks timing/signal-integrity violations, and auto-tunes the flow config.
+      </p>
+      <ul class="highlights">
+        <li>Designed a 3-state FSM (<code>mem → compute → outfifo</code>) that streams matrices A and B in over AXI-Stream, runs K pipelined multiply-accumulate cycles per output element, and drains results through a back-pressured output FIFO</li>
+        <li>Built a 2-stage pipelined MAC with saturating accumulation at the signed 32-bit limits, and a circular dual-port output FIFO driving the output AXI-Stream with <code>TREADY</code> back-pressure</li>
+        <li>Wrote <code>scripts/librelane_optimizer.py</code> — reads a LibreLane run's metrics, ranks setup/hold slack at the slow/fast corners alongside slew, capacitance, and fanout violations, then patches <code>config.json</code> (clock period, repair margins, resizer options) and resumes the flow from the right step</li>
+        <li>Latest run closes timing with 0 setup/hold violations and 0 DRC/LVS errors in a 2500×2500 µm die at 240,902 µm² cell area, with only a handful of slew/cap/fanout violations remaining at the typical corner</li>
+      </ul>
+
+      <div class="mermaid-diagram">
+        <pre class="mermaid">flowchart LR
+    IN([AXI-Stream in&lt;br/&gt;TDATA / TVALID / TUSER])
+
+    subgraph MMM["MMM (top)"]
+        direction LR
+        subgraph IM["input_mems"]
+            FSM1["Load FSM&lt;br/&gt;start → A → B → loaded"]
+            MA[("memA&lt;br/&gt;M·MAXK words")]
+            MB[("memB&lt;br/&gt;MAXK·N words")]
+        end
+        CTRL["Control FSM&lt;br/&gt;mem → compute → outfifo&lt;br/&gt;(m, n, k counters)"]
+        MAC["mac_pipe&lt;br/&gt;pipelined multiply +&lt;br/&gt;saturating accumulate"]
+        FIFO["fifo_out&lt;br/&gt;depth N, dual-port RAM"]
+    end
+
+    OUT([AXI-Stream out&lt;br/&gt;TDATA / TVALID])
+
+    IN --&gt; FSM1
+    FSM1 --&gt; MA &amp; MB
+    FSM1 -- matrices_loaded, K --&gt; CTRL
+    CTRL -- A_addr = m·K + k&lt;br/&gt;B_addr = N·k + n --&gt; MA &amp; MB
+    MA -- A_data --&gt; MAC
+    MB -- B_data --&gt; MAC
+    CTRL -- valid_input, clear_acc --&gt; MAC
+    MAC -- C[m][n] --&gt; FIFO
+    CTRL -- wr_en --&gt; FIFO
+    FIFO -- capacity --&gt; CTRL
+    CTRL -- compute_finished --&gt; FSM1
+    FIFO --&gt; OUT</pre>
+      </div>
+      <div class="media-placeholder">[ TODO: add GDS/Magic layout screenshot from the saved local run ]</div>
+
+      <a class="repo-link" href="https://github.com/EoghainHG/matmul-accelerator" target="_blank" rel="noopener">→ github.com/EoghainHG/matmul-accelerator</a>
+
+      <details class="deepdive">
+        <summary>Deep dive</summary>
+        <div class="dd-body">
+          <h4>Architecture &amp; design decisions</h4>
+          <div class="placeholder">
+            <code>input_mems</code> streams A then B into two single-port memories over AXI-Stream;
+            <code>TUSER</code> carries K and a <code>newA</code> flag so A can be reused against a new
+            B without re-streaming it. The top-level FSM steps through every (m, n) output pair, running
+            K MAC cycles for each before handing the result to the output FIFO — default parameters are
+            M=7, N=9, MAXK=8 with 12-bit signed inputs and 32-bit saturating outputs.
+          </div>
+          <h4>Verification approach</h4>
+          <div class="placeholder">
+            Physical verification runs the full LibreLane flow (Yosys → OpenROAD → Magic/KLayout →
+            Netgen), with <code>scripts/librelane_optimizer.py</code> closing the loop automatically:
+            it checks setup slack at the ss/100°C/1.60V corner, hold slack at the ff/−40°C/1.95V corner,
+            and slew/cap/fanout violations, then patches the config and resumes from the right step —
+            tracked run-over-run in <code>librelane_run_history.json</code>.
+          </div>
+          <h4>Results &amp; what's next</h4>
+          <div class="placeholder">
+            The latest run (<code>RUN_2026-05-05_21-24-17</code>) closes at 21.79 ns with +12.19 ns /
+            +3.35 ns setup slack (tt / ss) and 0 DRC/LVS errors, at 16.9 mW. A handful of slew, cap, and
+            fanout violations remain at the typical corner, plus 33 antenna-violating nets — next step is
+            running those through the same auto-tuning loop that closed timing.
           </div>
         </div>
       </details>
