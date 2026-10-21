@@ -289,12 +289,11 @@
         ASIC competition. Four competing micro-architectures (a microcoded pin-sequencer, a tiny
         accumulator CPU, an FSM-plus-shift-register hybrid, and a distributed per-signal
         pattern-generator design) are benchmarked against a shared bar: implement SPI, UART, and I2C
-        from loaded programs with the RTL frozen between them, confirmed not just in simulation but
-        captured and decoded on real FPGA hardware.
+        from loaded programs, confirmed in simulation as well as captured and decoded on real FPGA hardware.
       </p>
       <ul class="highlights">
         <li>Designed and benchmarked four candidate pin-sequencer architectures against a shared SPI-mode-0 baseline: 188 to 395 cells (0.8–1.6% of the ~24K-cell Tiny Tapeout budget), versus a 6,202-cell (26%) reference design, reframing die area from a non-issue to a real constraint</li>
-        <li>Defined a pass bar that forces an honest comparison: all three required protocols (SPI, UART, I2C) must run from loaded programs with the RTL frozen between them; I2C's open-drain pins, clock stretching, and ACK turnaround are the discriminator none of the lean candidates handle yet</li>
+        <li>Defined a pass bar that forces an honest comparison: all three required protocols (SPI, UART, I2C) must run from loaded programs; I2C's open-drain pins, clock stretching, and ACK turnaround are the discriminator none of the lean candidates handle yet</li>
         <li>Caught a bug invisible to 109 passing simulation tests (the reference design's output pin never actually held its level on real hardware) by capturing and decoding each protocol on a Genesys 2 FPGA with a logic analyzer, and made that hardware-confirmation step mandatory for every candidate going forward</li>
         <li>Measured that 10BASE-T Ethernet (Manchester-encoded, ~3.3 clocks per half-bit at Tiny Tapeout's 66 MHz pad ceiling) can't fit a programmable sequencer at any legal clock, and built it instead as dedicated hardware: a from-scratch serializer/deserializer/FCS datapath (596 cells), validating the no-PHY, direct-pin-drive approach on real hardware via a hand-routed companion board before committing the pin budget on-chip</li>
       </ul>
