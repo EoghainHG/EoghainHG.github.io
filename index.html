@@ -282,20 +282,21 @@
       </div>
       <div class="p-stack">
         <span class="tag">Verilog / SystemVerilog</span><span class="tag">cocotb</span>
-        <span class="tag">LibreLane</span><span class="tag">Tiny Tapeout</span><span class="tag">IHP CMOS5L</span>
+        <span class="tag">LibreLane</span><span class="tag">Tiny Tapeout</span><span class="tag">IHP CMOS5L</span><span class="tag">KiCad</span>
       </div>
       <p class="p-summary">
-        A reprogrammable, multi-protocol pin emulator built for a Jane Street-sponsored Tiny Tapeout
-        ASIC competition. Four competing micro-architectures (a microcoded pin-sequencer, a tiny
-        accumulator CPU, an FSM-plus-shift-register hybrid, and a distributed per-signal
-        pattern-generator design) are benchmarked against a shared bar: implement SPI, UART, and I2C
-        from loaded programs, confirmed in simulation as well as captured and decoded on real FPGA hardware.
+        A reprogrammable, multi-protocol pin emulator for a Jane Street-sponsored Tiny Tapeout ASIC
+        competition, built around ProtoCore: a small PIO-style state machine with a 16-bit,
+        pin-oriented instruction set, so protocols are firmware loaded after fabrication rather than
+        fixed logic. One frozen build runs SPI, UART, and I2C from loaded programs, each captured and
+        decoded off the pins of a Genesys 2 FPGA, and a small hardware datapath extends the same core
+        to 10BASE-T Ethernet.
       </p>
       <ul class="highlights">
-        <li>Designed and benchmarked four candidate pin-sequencer architectures against a shared SPI-mode-0 baseline: 188 to 395 cells (0.8–1.6% of the ~24K-cell Tiny Tapeout budget), versus a 6,202-cell (26%) reference design, reframing die area from a non-issue to a real constraint</li>
-        <li>Defined a pass bar that forces an honest comparison: all three required protocols (SPI, UART, I2C) must run from loaded programs; I2C's open-drain pins, clock stretching, and ACK turnaround are the discriminator none of the lean candidates handle yet</li>
-        <li>Caught a bug invisible to 109 passing simulation tests (the reference design's output pin never actually held its level on real hardware) by capturing and decoding each protocol on a Genesys 2 FPGA with a logic analyzer, and made that hardware-confirmation step mandatory for every candidate going forward</li>
-        <li>Measured that 10BASE-T Ethernet (Manchester-encoded, ~3.3 clocks per half-bit at Tiny Tapeout's 66 MHz pad ceiling) can't fit a programmable sequencer at any legal clock, and built it instead as dedicated hardware: a from-scratch serializer/deserializer/FCS datapath (596 cells), validating the no-PHY, direct-pin-drive approach on real hardware via a hand-routed companion board before committing the pin budget on-chip</li>
+        <li>ProtoCore is three layers: an 8-pin I/O fabric where each pin is runtime-configurable as push-pull, input, or open-drain; a timing engine with pulse generators, edge detection, and clock stretching; and a state machine executing single-cycle 16-bit instructions from a 32-word program memory, with X/Y/ISR/OSR registers and TX/RX FIFOs to the host</li>
+        <li>Ran all three required protocols from loaded programs on one bitstream with no RTL change between them: I2C master write in 18 of 32 program words (open-drain SDA/SCL, <code>WAIT</code> absorbing a slave's clock stretching) and UART 8N1 in 13 words, measured on hardware at 115,196 baud against 115,207 predicted (0.01%)</li>
+        <li>Extended the ISA with single-pin <code>OUT</code>/<code>IN</code>/<code>SET PIN</code> modes and a pin-output hold after finding no program could place runtime data on one line or hold a level; the hold bug was invisible to 109 passing simulation tests and obvious on a logic analyzer</li>
+        <li>Took the core to 10BASE-T with a 596-cell datapath (Manchester serializer, CRC-32 FCS unit, PLL-free edge-timing deserializer) that turns the requirement from instructions per bit into instructions per byte; on a hand-designed Pmod magjack board it decodes live switch traffic (STP, LLDP, IPv4/IPv6) at the 50 MHz Tiny Tapeout clock</li>
       </ul>
 
       <a class="repo-link" href="https://github.com/EoghainHG/janestreet-protocol-emulator" target="_blank" rel="noopener">→ github.com/EoghainHG/janestreet-protocol-emulator</a>
@@ -305,32 +306,47 @@
         <div class="dd-body">
           <h4>Architecture &amp; design decisions</h4>
           <div class="placeholder">
-            Four paradigms for the same job (sequencing pin actions from a loaded program) are built
-            and compared head to head: a combinational microcode ROM driving pin actions and
-            loop/branch fields directly; a tiny general-purpose accumulator core with a pin-oriented
-            instruction set (protocol behavior lives entirely in firmware); dedicated shift-register and
-            clock-divider primitives sequenced by a small explicit FSM; and independent per-signal
-            countdown registers (SCLK, MOSI, MISO, CS_N, DONE) driven by one shared step pulse, with no
-            central FSM state at all.
+            The host loads a program over UART into the state machine's program memory, then streams
+            data through the TX FIFO. A typical protocol loop is a handful of instructions:
+            <code>PULL</code> a byte into OSR, <code>OUT PIN</code> to shift one bit onto a line,
+            <code>SET PIN</code> to toggle a clock, a <code>SET Y</code> / <code>JMP!Y</code> delay loop
+            for bit timing, and <code>JMP!X</code> to count bits. Inputs come back through
+            <code>IN PIN</code> into ISR and <code>PUSH</code> to the RX FIFO. Because every instruction
+            takes exactly one cycle, bit timing is a program constant: the UART program lands within
+            0.006% of 9600 through 230400 baud at 50 MHz just by choosing the delay count. I2C relies on
+            the pieces leaner designs lack: open-drain pin mode (drive low, release, never drive high)
+            and <code>WAIT</code> on a pin level, which is how the master tolerates clock stretching.
+            ProtoCore was chosen over four lean SPI-only prototypes (188–395 cells) because it is the
+            only one that is truly reprogrammable after fabrication, with runtime pin direction,
+            wait-on-pin, and writable program memory. For Ethernet, Manchester at 10 Mbit/s leaves
+            only ~2.5 clocks per half-bit, so a hardware serializer handles the bits while the program
+            only has to feed a byte every 32 cycles; the same shifter also offloads SPI and UART.
           </div>
           <h4>Verification approach</h4>
           <div class="placeholder">
-            Per candidate: cells/µm² at full function, core clocks per bit per protocol, max bit rate at
-            50 MHz, program words per protocol, pins required, and, the discriminator the project
-            treats as non-negotiable, whether it's been hardware-confirmed. Simulation agreement alone
-            doesn't count: a prior design passed 109 simulation unit tests while its pin never held a
-            real level on hardware, because every test happened to sample it in the one cycle it looked
-            correct. Every candidate now has to be captured on a Genesys 2 FPGA and decoded against
-            expected timing before it's recorded as passing.
+            cocotb testbenches drive each protocol against bus-functional models (an I2C slave that
+            ACKs and stretches SCL) and measure the waveform rather than only decoding it: every UART
+            bit is checked to be one period wide, and Ethernet frames are validated against zlib's
+            CRC independently of the hardware's own FCS. Simulation alone doesn't count as passing.
+            Each protocol is captured on a Genesys 2 with a logic analyzer through an automated
+            sigrok flow and decoded two independent ways, and the test scripts sample the program
+            counter so a wedged program can't report success. That flow caught two bugs simulation
+            missed: the output-hold bug, and a pin-readback wiring error that hung I2C mid-transaction.
+            The Ethernet receiver has a self-checking Verilator bench with swept impairments
+            (20 ns duty distortion, ±8 ns jitter) and a 10-minute soak on a real network.
           </div>
           <h4>Results &amp; what's next</h4>
           <div class="placeholder">
-            All four lean candidates clear SPI mode-0 at 188–395 cells; the riscy accumulator core also
-            adds UART TX, at a cost (two new opcodes, a wider instruction word) that a prior analytical
-            estimate missed entirely. I2C (open-drain, clock-stretching, ACK turnaround) is the next
-            gate, since none of today's candidates handle it yet. Ethernet is explicitly out of scope
-            for the programmable core (the clock-rate math rules it out) and lives instead as the
-            separate fixed-function datapath described above.
+            SPI, I2C, and UART are hardware-confirmed from loaded programs on one frozen bitstream,
+            and the Ethernet receiver decoded 606 real frames in a 10-minute soak, 94.1% with good FCS
+            (every frame up to 128 bytes good; longer frames point at duty-distortion margin).
+            ProtoCore synthesizes to 6,202 cells, about 26% of the ~24K-cell budget, and roughly a
+            third of that is two PWM engines with 16×8 multipliers that a threshold compare could
+            replace. Next: trimming that area, fixing ISA limits found along the way (<code>JMP PIN</code>'s
+            pin and target fields overlap, and program addresses are absolute), a post-freeze
+            fourth-protocol test such as PS/2 to measure reprogrammability rather than assert it, and
+            confirming Tiny Tapeout's pad drive strength, which sets how many pins Ethernet transmit
+            needs. Submission deadline is Jan. 18, 2027.
           </div>
         </div>
       </details>
