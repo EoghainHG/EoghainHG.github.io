@@ -101,7 +101,7 @@
     background: var(--bg-alt);
   }
   .placeholder strong { color: var(--text); }
-  .placeholder.todo::before { content: "TODO — "; color: var(--accent-dim); font-weight: 600; }
+  .placeholder.todo::before { content: "TODO: "; color: var(--accent-dim); font-weight: 600; }
 
   .media-placeholder {
     border: 1px dashed var(--border);
@@ -187,10 +187,10 @@
 <header class="hero">
   <div class="wrap">
     <h1>Eoghain Gray</h1>
-    <p class="role">Digital Design &amp; Verification Engineer — SystemVerilog / RTL / Verification</p>
+    <p class="role">Digital Design &amp; Verification Engineer | SystemVerilog / RTL / Verification</p>
     <p class="summary">
-      MS Electrical Engineering (Stony Brook). I design and verify digital hardware in SystemVerilog —
-      from pipelined CPU micro-architecture down through synthesis and place-and-route — and verify it
+      MS Electrical Engineering (Stony Brook). I design and verify digital hardware in SystemVerilog,
+      from pipelined CPU micro-architecture down through synthesis and place-and-route, and verify it
       with SVA, functional coverage, and constrained-random testbenches.
       <!-- TODO: tweak this one-liner once you've picked the specific role flavor (design vs. verification) you're leaning into most. -->
     </p>
@@ -216,7 +216,7 @@
     <!-- PROJECT 0 -->
     <article class="project-card">
       <div class="p-head">
-        <h3>Genesys 2 RISC-V SoC — Linux on Custom Silicon</h3>
+        <h3>Genesys 2 RISC-V SoC: Linux on Custom Silicon</h3>
         <span class="p-date">Aug. 2026 – Present</span>
       </div>
       <div class="p-stack">
@@ -228,13 +228,13 @@
         A custom RV32IMA RISC-V system-on-chip written from scratch in SystemVerilog, targeting a
         Digilent Genesys 2 FPGA board (Xilinx Kintex-7). The core boots OpenSBI and an unmodified
         Linux kernel to an interactive shell over a self-built UART PHY, backed by 1GB of real
-        DDR3 through Xilinx's MIG controller — verified in simulation and brought up incrementally
+        DDR3 through Xilinx's MIG controller, verified in simulation and brought up incrementally
         on physical hardware.
       </p>
       <ul class="highlights">
-        <li>Designed a custom 5-stage pipelined RV32IMA core from scratch — Sv32 virtual memory with a hardware page-table walker and ITLB/DTLB, a branch target buffer, hardware multiply/divide and atomics, and EX-EX/MEM-EX forwarding — enough to run an unmodified Linux kernel</li>
+        <li>Designed a custom 5-stage pipelined RV32IMA core from scratch, with Sv32 virtual memory with a hardware page-table walker and ITLB/DTLB, a branch target buffer, hardware multiply/divide and atomics, and EX-EX/MEM-EX forwarding, enough to run an unmodified Linux kernel</li>
         <li>Built a from-scratch UART PHY (this board has no hard UART IP) with a 16550-compatible register model, so Linux's stock 8250 driver talks to it natively</li>
-        <li>Brought up DDR3 via Xilinx MIG and AXI SmartConnect in staged, risk-isolated bitstreams (blink → core-only → UART → DDR3 → SD), root-causing real silicon bugs — a missing generated-clock constraint that made a timing report meaningless, and a ~6.3% UART baud-rate mismatch causing intermittent byte corruption — using ILA-captured waveforms on the real board</li>
+        <li>Brought up DDR3 via Xilinx MIG and AXI SmartConnect in staged, risk-isolated bitstreams (blink → core-only → UART → DDR3 → SD), root-causing real silicon bugs (a missing generated-clock constraint that made a timing report meaningless, and a ~6.3% UART baud-rate mismatch causing intermittent byte corruption) using ILA-captured waveforms on the real board</li>
         <li>Booted OpenSBI and a full, unmodified Linux kernel to a real interactive shell prompt on physical Kintex-7 hardware</li>
       </ul>
 
@@ -251,14 +251,14 @@
             Peripherals (CLINT, PLIC, a 16550-compatible UART, an SPI master for SD, and a bit-banged
             I2C/GPIO block for the board's power monitors) sit behind an MMIO decoder. Programs load
             into DDR3 over JTAG before the CPU is released from reset, since the Genesys 2 has no hard
-            processor system — the only path onto the board.
+            processor system, the only path onto the board.
           </div>
           <h4>Verification approach</h4>
           <div class="placeholder">
             A Verilator regression suite covers the core, caches, MMU, interrupts, and every
             peripheral individually, plus the official riscv-tests ISA compliance suite and an
             OpenSBI boot test in simulation. Real hardware bring-up followed the same staged-risk
-            discipline — each new subsystem (UART, DDR3 via MIG, SD) got its own isolated top-level
+            discipline: each new subsystem (UART, DDR3 via MIG, SD) got its own isolated top-level
             bitstream before being folded into the full design, and a Basic-tier ILA was instantiated
             directly in RTL to capture real AXI/cache traffic on the board when a bug (intermittent
             instruction-fetch corruption) couldn't be root-caused from symptoms alone.
@@ -277,7 +277,7 @@
     <!-- PROJECT 0.5 -->
     <article class="project-card">
       <div class="p-head">
-        <h3>Protocol Emulator — Jane Street Tiny Tapeout ASIC Entry</h3>
+        <h3>Protocol Emulator: Jane Street Tiny Tapeout ASIC Entry</h3>
         <span class="p-date">Sep. 2026 – Present</span>
       </div>
       <div class="p-stack">
@@ -286,17 +286,17 @@
       </div>
       <p class="p-summary">
         A reprogrammable, multi-protocol pin emulator built for a Jane Street-sponsored Tiny Tapeout
-        ASIC competition. Four competing micro-architectures — a microcoded pin-sequencer, a tiny
+        ASIC competition. Four competing micro-architectures (a microcoded pin-sequencer, a tiny
         accumulator CPU, an FSM-plus-shift-register hybrid, and a distributed per-signal
-        pattern-generator design — are benchmarked against a shared bar: implement SPI, UART, and I2C
+        pattern-generator design) are benchmarked against a shared bar: implement SPI, UART, and I2C
         from loaded programs with the RTL frozen between them, confirmed not just in simulation but
         captured and decoded on real FPGA hardware.
       </p>
       <ul class="highlights">
-        <li>Designed and benchmarked four candidate pin-sequencer architectures against a shared SPI-mode-0 baseline — 188 to 395 cells (0.8–1.6% of the ~24K-cell Tiny Tapeout budget) — versus a 6,202-cell (26%) reference design, reframing die area from a non-issue to a real constraint</li>
-        <li>Defined a pass bar that forces an honest comparison: all three required protocols (SPI, UART, I2C) must run from loaded programs with the RTL frozen between them — I2C's open-drain pins, clock stretching, and ACK turnaround are the discriminator none of the lean candidates handle yet</li>
-        <li>Caught a bug invisible to 109 passing simulation tests — the reference design's output pin never actually held its level on real hardware — by capturing and decoding each protocol on a Genesys 2 FPGA with a logic analyzer, and made that hardware-confirmation step mandatory for every candidate going forward</li>
-        <li>Measured that 10BASE-T Ethernet (Manchester-encoded, ~3.3 clocks per half-bit at Tiny Tapeout's 66 MHz pad ceiling) can't fit a programmable sequencer at any legal clock, and built it instead as dedicated hardware — a from-scratch serializer/deserializer/FCS datapath (596 cells) — validating the no-PHY, direct-pin-drive approach on real hardware via a hand-routed companion board before committing the pin budget on-chip</li>
+        <li>Designed and benchmarked four candidate pin-sequencer architectures against a shared SPI-mode-0 baseline: 188 to 395 cells (0.8–1.6% of the ~24K-cell Tiny Tapeout budget), versus a 6,202-cell (26%) reference design, reframing die area from a non-issue to a real constraint</li>
+        <li>Defined a pass bar that forces an honest comparison: all three required protocols (SPI, UART, I2C) must run from loaded programs with the RTL frozen between them; I2C's open-drain pins, clock stretching, and ACK turnaround are the discriminator none of the lean candidates handle yet</li>
+        <li>Caught a bug invisible to 109 passing simulation tests (the reference design's output pin never actually held its level on real hardware) by capturing and decoding each protocol on a Genesys 2 FPGA with a logic analyzer, and made that hardware-confirmation step mandatory for every candidate going forward</li>
+        <li>Measured that 10BASE-T Ethernet (Manchester-encoded, ~3.3 clocks per half-bit at Tiny Tapeout's 66 MHz pad ceiling) can't fit a programmable sequencer at any legal clock, and built it instead as dedicated hardware: a from-scratch serializer/deserializer/FCS datapath (596 cells), validating the no-PHY, direct-pin-drive approach on real hardware via a hand-routed companion board before committing the pin budget on-chip</li>
       </ul>
 
       <a class="repo-link" href="https://github.com/EoghainHG/janestreet-protocol-emulator" target="_blank" rel="noopener">→ github.com/EoghainHG/janestreet-protocol-emulator</a>
@@ -306,7 +306,7 @@
         <div class="dd-body">
           <h4>Architecture &amp; design decisions</h4>
           <div class="placeholder">
-            Four paradigms for the same job — sequencing pin actions from a loaded program — are built
+            Four paradigms for the same job (sequencing pin actions from a loaded program) are built
             and compared head to head: a combinational microcode ROM driving pin actions and
             loop/branch fields directly; a tiny general-purpose accumulator core with a pin-oriented
             instruction set (protocol behavior lives entirely in firmware); dedicated shift-register and
@@ -317,8 +317,8 @@
           <h4>Verification approach</h4>
           <div class="placeholder">
             Per candidate: cells/µm² at full function, core clocks per bit per protocol, max bit rate at
-            50 MHz, program words per protocol, pins required, and — the discriminator the project
-            treats as non-negotiable — whether it's been hardware-confirmed. Simulation agreement alone
+            50 MHz, program words per protocol, pins required, and, the discriminator the project
+            treats as non-negotiable, whether it's been hardware-confirmed. Simulation agreement alone
             doesn't count: a prior design passed 109 simulation unit tests while its pin never held a
             real level on hardware, because every test happened to sample it in the one cycle it looked
             correct. Every candidate now has to be captured on a Genesys 2 FPGA and decoded against
@@ -328,7 +328,7 @@
           <div class="placeholder">
             All four lean candidates clear SPI mode-0 at 188–395 cells; the riscy accumulator core also
             adds UART TX, at a cost (two new opcodes, a wider instruction word) that a prior analytical
-            estimate missed entirely. I2C — open-drain, clock-stretching, ACK turnaround — is the next
+            estimate missed entirely. I2C (open-drain, clock-stretching, ACK turnaround) is the next
             gate, since none of today's candidates handle it yet. Ethernet is explicitly out of scope
             for the programmable core (the clock-rate math rules it out) and lives instead as the
             separate fixed-function datapath described above.
@@ -340,7 +340,7 @@
     <!-- PROJECT 1 -->
     <article class="project-card">
       <div class="p-head">
-        <h3>RISC-V 7-Stage Dual-Core CPU — Sky130 RTL-to-GDSII</h3>
+        <h3>RISC-V 7-Stage Dual-Core CPU: Sky130 RTL-to-GDSII</h3>
         <span class="p-date">Jan. 2026 – Present</span>
       </div>
       <div class="p-stack">
@@ -350,14 +350,14 @@
       <p class="p-summary">
         Dual-core, 7-stage pipelined RV32IM(+A) processor with coherent private caches and a branch
         target buffer, taken through a full LibreLane (OpenROAD) place-and-route flow on the SkyWater
-        sky130 open PDK — closing timing at 40 MHz across all 9 PVT corners with 0 routing DRC errors
+        sky130 open PDK, closing timing at 40 MHz across all 9 PVT corners with 0 routing DRC errors
         and a clean LVS (3.24 mm², 84.6 mW).
       </p>
       <ul class="highlights">
         <li>Architected a 7-stage pipeline (IF → PD → ID → RF → EX → MA → WB) per core, with a 64-entry branch target buffer, 2-bit saturating counters, and 0-cycle-penalty JAL resolution in IF</li>
         <li>Designed write-invalidate snooping coherence between the two cores' write-through D-caches, plus cross-hart LR/SC arbitration (<code>sc_inhibit</code>) and reservation invalidation for atomics</li>
-        <li>Verified against the official RISC-V ISA test suite in Verilator — 57/57 single-core, 57/57 dual-core, plus 4/4 custom multicore coherence/atomics tests (cache coherence, shared LR/SC counter, spinlock, <code>mhartid</code>)</li>
-        <li>Closed timing at 25 ns / 40 MHz across all 9 PVT corners post-route with 0 setup/hold violations, 0 routing DRC errors, and a clean Netgen LVS — backed by two <code>sky130_sram_1kbyte</code> macros per core</li>
+        <li>Verified against the official RISC-V ISA test suite in Verilator: 57/57 single-core, 57/57 dual-core, plus 4/4 custom multicore coherence/atomics tests (cache coherence, shared LR/SC counter, spinlock, <code>mhartid</code>)</li>
+        <li>Closed timing at 25 ns / 40 MHz across all 9 PVT corners post-route with 0 setup/hold violations, 0 routing DRC errors, and a clean Netgen LVS, backed by two <code>sky130_sram_1kbyte</code> macros per core</li>
       </ul>
 
       <div class="mermaid-diagram">
@@ -394,7 +394,7 @@
       </div>
       <figure>
         <img class="p-media" src="images/dualcore-layout.png" alt="Final routed layout of the dual-core RISC-V SoC in sky130, metal layers li1 through met5">
-        <figcaption>Final routed layout (li1–met5), 1.8 mm × 1.8 mm die — the two magenta blocks per core are the sky130 SRAM macros backing each D-cache</figcaption>
+        <figcaption>Final routed layout (li1–met5), 1.8 mm × 1.8 mm die; the two magenta blocks per core are the sky130 SRAM macros backing each D-cache</figcaption>
       </figure>
 
       <a class="repo-link" href="https://github.com/EoghainHG/risc-7stage-rtl" target="_blank" rel="noopener">→ github.com/EoghainHG/risc-7stage-rtl</a>
@@ -405,7 +405,7 @@
           <h4>Architecture &amp; design decisions</h4>
           <div class="placeholder">
             Each core has its own CPU, I-cache, and D-cache with independent external memory ports.
-            Both D-caches are write-through, so write-invalidate snooping is sufficient for coherence —
+            Both D-caches are write-through, so write-invalidate snooping is sufficient for coherence:
             every store from one core invalidates any matching line in the other core's D-cache.
             Hazards are handled with EX/MA→EX, MA/WB→EX, and MA/WB→RF forwarding, a 1-cycle load-use
             stall, and a 4-cycle mispredict penalty on resolved branches/JALR/traps (correctly predicted
@@ -422,7 +422,7 @@
           <h4>Results &amp; what's next</h4>
           <div class="placeholder">
             Timing closes at every PVT corner (worst case +0.224 ns setup at max_ss_100C_1v60), with
-            66.3% instance utilization and 0 router DRC errors — but Magic/KLayout sign-off DRC and
+            66.3% instance utilization and 0 router DRC errors, but Magic/KLayout sign-off DRC and
             antenna repair are currently disabled to keep run time manageable, so this isn't tape-out
             clean yet: 707 nets still carry antenna violations and there are slew/cap violations at the
             slow and fast corners. Next: insert diodes during placement, give the floorplan more room,
@@ -465,8 +465,8 @@
       <p class="p-summary">
         A standard-cell placement flow for VLSI physical design, reading industry-standard
         Bookshelf-format benchmark circuits (the ISPD <code>superblue12</code> benchmark) and
-        implementing two independent placement strategies — min-cut recursive bipartitioning and
-        quadratic (analytic) placement — sharing a common Fiduccia–Mattheyses partitioner.
+        implementing two independent placement strategies, min-cut recursive bipartitioning and
+        quadratic (analytic) placement, sharing a common Fiduccia–Mattheyses partitioner.
       </p>
       <ul class="highlights">
         <li>Implemented the Fiduccia–Mattheyses (FM) min-cut partitioning algorithm from scratch in C++, with a bucket-list gain structure and checkpointing so FM results can be saved/reloaded instead of recomputed</li>
@@ -516,7 +516,7 @@
     <!-- PROJECT 3 -->
     <article class="project-card">
       <div class="p-head">
-        <h3>Matrix Multiply Accelerator — Sky130 RTL-to-GDS</h3>
+        <h3>Matrix Multiply Accelerator: Sky130 RTL-to-GDS</h3>
         <span class="p-date">Aug. 2024 – Dec. 2024</span>
       </div>
       <div class="p-stack">
@@ -526,13 +526,13 @@
       <p class="p-summary">
         A parameterized, AXI-Stream matrix-matrix multiplier (M×K by K×N, 12-bit signed in / 32-bit
         saturating out) hardened to GDS with LibreLane on the SkyWater sky130 PDK, closing timing at
-        21.79 ns (~46 MHz) with 0 DRC/LVS errors and 16.9 mW — paired with a Python tool that reads a
+        21.79 ns (~46 MHz) with 0 DRC/LVS errors and 16.9 mW, paired with a Python tool that reads a
         run's metrics, ranks timing/signal-integrity violations, and auto-tunes the flow config.
       </p>
       <ul class="highlights">
         <li>Designed a 3-state FSM (<code>mem → compute → outfifo</code>) that streams matrices A and B in over AXI-Stream, runs K pipelined multiply-accumulate cycles per output element, and drains results through a back-pressured output FIFO</li>
         <li>Built a 2-stage pipelined MAC with saturating accumulation at the signed 32-bit limits, and a circular dual-port output FIFO driving the output AXI-Stream with <code>TREADY</code> back-pressure</li>
-        <li>Wrote <code>scripts/librelane_optimizer.py</code> — reads a LibreLane run's metrics, ranks setup/hold slack at the slow/fast corners alongside slew, capacitance, and fanout violations, then patches <code>config.json</code> (clock period, repair margins, resizer options) and resumes the flow from the right step</li>
+        <li>Wrote <code>scripts/librelane_optimizer.py</code>: reads a LibreLane run's metrics, ranks setup/hold slack at the slow/fast corners alongside slew, capacitance, and fanout violations, then patches <code>config.json</code> (clock period, repair margins, resizer options) and resumes the flow from the right step</li>
         <li>Latest run closes timing with 0 setup/hold violations and 0 DRC/LVS errors in a 2500×2500 µm die at 240,902 µm² cell area, with only a handful of slew/cap/fanout violations remaining at the typical corner</li>
       </ul>
 
@@ -578,7 +578,7 @@
             <code>input_mems</code> streams A then B into two single-port memories over AXI-Stream;
             <code>TUSER</code> carries K and a <code>newA</code> flag so A can be reused against a new
             B without re-streaming it. The top-level FSM steps through every (m, n) output pair, running
-            K MAC cycles for each before handing the result to the output FIFO — default parameters are
+            K MAC cycles for each before handing the result to the output FIFO. Default parameters are
             M=7, N=9, MAXK=8 with 12-bit signed inputs and 32-bit saturating outputs.
           </div>
           <h4>Verification approach</h4>
@@ -586,14 +586,14 @@
             Physical verification runs the full LibreLane flow (Yosys → OpenROAD → Magic/KLayout →
             Netgen), with <code>scripts/librelane_optimizer.py</code> closing the loop automatically:
             it checks setup slack at the ss/100°C/1.60V corner, hold slack at the ff/−40°C/1.95V corner,
-            and slew/cap/fanout violations, then patches the config and resumes from the right step —
+            and slew/cap/fanout violations, then patches the config and resumes from the right step,
             tracked run-over-run in <code>librelane_run_history.json</code>.
           </div>
           <h4>Results &amp; what's next</h4>
           <div class="placeholder">
             The latest run (<code>RUN_2026-05-05_21-24-17</code>) closes at 21.79 ns with +12.19 ns /
             +3.35 ns setup slack (tt / ss) and 0 DRC/LVS errors, at 16.9 mW. A handful of slew, cap, and
-            fanout violations remain at the typical corner, plus 33 antenna-violating nets — next step is
+            fanout violations remain at the typical corner, plus 33 antenna-violating nets; next step is
             running those through the same auto-tuning loop that closed timing.
           </div>
         </div>
